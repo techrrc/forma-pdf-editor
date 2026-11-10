@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101114" />
+  <meta name="description" content="A private, browser-based PDF editor." />
+  <title>Forma PDF — Professional PDF Editor</title>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Forma PDF home"><span class="brand-mark">F</span><span>forma<span class="brand-muted">pdf</span></span></a>
+      <div class="top-actions">
+        <span class="privacy"><i></i> Files stay on your device</span>
+        <button id="downloadBtn" class="btn btn-primary" disabled>Download PDF <span>↓</span></button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section id="welcome" class="welcome">
+        <div class="eyebrow"><span></span> PRIVATE · BROWSER-BASED PDF WORKSPACE</div>
+        <h1>Your documents.<br><em>Your control.</em></h1>
+        <p class="welcome-copy">Edit text, update figures and manage pages in a focused PDF workspace. Your files are processed locally in this browser.</p>
+        <label id="dropzone" class="dropzone" for="fileInput">
+          <input id="fileInput" type="file" accept="application/pdf,.pdf" />
+          <span class="upload-icon">↑</span>
+          <strong>Drop a PDF here</strong>
+          <span>or <u>browse files</u> from your device</span>
+          <small>PDF files · Best performance with files under 100 MB</small>
+        </label>
+        <div class="welcome-foot"><span>NO ACCOUNT REQUIRED</span><span>·</span><span>NO SERVER UPLOAD</span><span>·</span><span>FREE OPEN-SOURCE LIBRARIES</span></div>
+      </section>
+
+      <section id="editor" class="editor hidden">
+        <aside class="sidebar">
+          <div class="side-heading"><span>DOCUMENT</span><button id="closeDoc" class="icon-btn" title="Close document">×</button></div>
+          <div class="file-card"><div class="pdf-icon">PDF</div><div class="file-meta"><strong id="fileName">document.pdf</strong><small id="fileInfo">0 pages</small></div></div>
+          <div class="side-heading pages-heading"><span>PAGES</span><span id="pageCount">0</span></div>
+          <div id="pageList" class="page-list"></div>
+          <label class="add-page" for="insertPdfInput">＋ Insert pages from PDF<input id="insertPdfInput" type="file" accept="application/pdf,.pdf" /></label>
+          <div class="sidebar-bottom"><span class="status-dot"></span> Saved in this session only</div>
+        </aside>
+
+        <section class="workspace">
+          <div class="toolbar">
+            <div class="tool-group">
+              <button id="prevPage" class="icon-btn" title="Previous page">‹</button>
+              <span class="page-indicator"><input id="pageNumber" type="number" min="1" value="1" /> <span>/</span> <b id="totalPages">1</b></span>
+              <button id="nextPage" class="icon-btn" title="Next page">›</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="tool-group">
+              <button id="zoomOut" class="icon-btn" title="Zoom out">−</button>
+              <span id="zoomValue" class="zoom-value">100%</span>
+              <button id="zoomIn" class="icon-btn" title="Zoom in">＋</button>
+              <button id="fitPage" class="icon-btn text-icon" title="Fit page">Fit</button>
+            </div>
+            <div class="toolbar-spacer"></div>
+            <button id="undoBtn" class="btn btn-quiet" disabled>↶ Undo</button>
+            <button id="redoBtn" class="btn btn-quiet" disabled>↷ Redo</button>
+          </div>
+
+          <div class="canvas-area" id="canvasArea">
+            <div id="emptyCanvas" class="empty-canvas hidden">Select a page to begin editing.</div>
+            <div id="pageStage" class="page-stage">
+              <canvas id="pdfCanvas"></canvas>
+              <div id="textLayer" class="text-layer"></div>
+              <div id="annotationLayer" class="annotation-layer"></div>
+            </div>
+          </div>
+
+          <div class="bottom-bar">
+            <span id="pageDimensions">Ready</span>
+            <span><kbd>Esc</kbd> deselect · <kbd>Ctrl</kbd> + <kbd>Z</kbd> undo</span>
+          </div>
+        </section>
+
+        <aside class="inspector">
+          <div class="inspector-title">EDIT CONTENT</div>
+          <div id="selectionHint" class="selection-hint">
+            <div class="hint-symbol">T</div>
+            <strong>Select text on the page</strong>
+            <p>Click a text item in the PDF to inspect and edit it. You can also add a new text element.</p>
+          </div>
+          <div id="editPanel" class="edit-panel hidden">
+            <div class="field-label">ORIGINAL TEXT</div>
+            <div id="originalText" class="original-text"></div>
+            <label class="field-label" for="replacementText">REPLACEMENT TEXT</label>
+            <textarea id="replacementText" rows="3" placeholder="Enter replacement text"></textarea>
+            <div class="font-row"><label>FONT SIZE<input id="fontSize" type="number" min="4" max="96" step="0.5" value="12"></label><label>TEXT COLOR<input id="textColor" type="color" value="#222222"></label></div>
+            <div class="font-note" id="fontNote">Font information is estimated from PDF text metadata.</div>
+            <button id="applyEdit" class="btn btn-primary full">Apply text change</button>
+            <button id="cancelEdit" class="btn btn-quiet full">Cancel</button>
+          </div>
+          <div class="inspector-divider"></div>
+          <div class="inspector-title">ADD CONTENT</div>
+          <button id="addTextBtn" class="add-text-btn"><span>＋</span><span><b>Add new text</b><small>Place a new text element on the page</small></span></button>
+          <p id="addTextHelp" class="add-help hidden">Tap or click the desired position on the page. Then enter your text.</p>
+          <div class="inspector-divider"></div>
+          <div class="inspector-title">PAGE ACTIONS</div>
+          <div class="page-actions">
+            <button id="rotatePage">↻ Rotate page</button>
+            <button id="deletePage" class="danger">⌫ Delete current page</button>
+          </div>
+          <div class="disclaimer">Editing existing PDF text may require replacing the original text area. Exact font recovery is not possible for every PDF, especially scanned documents and subset or outlined fonts. Review the exported file before using it.</div>
+        </aside>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status"></div>
+    <div id="modal" class="modal hidden">
+      <div class="modal-card"><div class="modal-close-row"><b>ADD TEXT</b><button id="modalClose" class="icon-btn">×</button></div>
+        <label class="field-label" for="newText">TEXT</label><textarea id="newText" rows="3" placeholder="Type something..."></textarea>
+        <div class="font-row"><label>FONT SIZE<input id="newFontSize" type="number" min="4" max="96" value="12"></label><label>COLOR<input id="newColor" type="color" value="#222222"></label></div>
+        <button id="confirmAdd" class="btn btn-primary full">Add to page</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
